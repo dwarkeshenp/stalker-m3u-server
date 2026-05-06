@@ -29,6 +29,7 @@ export interface Config extends BaseConfig {
   username?: string;
   password?: string;
   prehash?: string;
+  handshakeToken?: string;
 }
 
 export type VodOrdering = "none" | "rating" | "alphabetic";

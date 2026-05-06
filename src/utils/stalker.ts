@@ -271,6 +271,10 @@ export class StalkerAPI implements IProvider {
           const currentToken = this.cache.get<string>("auth_token");
 
           if (currentToken) {
+            if (initialConfig.prehash) {
+              this.isProfileFetching = false;
+              return currentToken;
+            }
             try {
               await this.__refreshToken();
               const newToken = this.cache.get<string>("auth_token");
@@ -284,7 +288,7 @@ export class StalkerAPI implements IProvider {
           logger.info("Performing full handshake...");
           this.cache.del("auth_token");
 
-          const presetToken = initialConfig.tokens.length > 0 ? initialConfig.tokens[0] : "";
+          const presetToken = initialConfig.handshakeToken || (initialConfig.tokens.length > 0 ? initialConfig.tokens[0] : "");
           const response: any = await this.performHandshake(presetToken);
 
           if (response?.js?.token) {
@@ -294,7 +298,9 @@ export class StalkerAPI implements IProvider {
             this.cache.set("auth_token", newToken, 3600);
             this.updateTokenInDB(newToken);
 
-            await this.__refreshToken();
+            if (!initialConfig.prehash) {
+              await this.__refreshToken();
+            }
 
             this.isProfileFetching = false;
             return newToken;
