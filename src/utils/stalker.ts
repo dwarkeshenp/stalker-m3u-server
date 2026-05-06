@@ -229,6 +229,8 @@ export class StalkerAPI implements IProvider {
         device_id2: initialConfig.deviceId2,
         serial_number: initialConfig.serialNumber,
         stb_type: initialConfig.stbType,
+        ...(token ? { token } : {}),
+        ...(initialConfig.prehash ? { prehash: initialConfig.prehash } : {}),
         JsHttpRequest: "1-xml",
       },
       (() => {
@@ -282,7 +284,8 @@ export class StalkerAPI implements IProvider {
           logger.info("Performing full handshake...");
           this.cache.del("auth_token");
 
-          const response: any = await this.performHandshake();
+          const presetToken = initialConfig.tokens.length > 0 ? initialConfig.tokens[0] : "";
+          const response: any = await this.performHandshake(presetToken);
 
           if (response?.js?.token) {
             const newToken = response.js.token;

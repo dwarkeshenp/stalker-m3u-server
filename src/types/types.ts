@@ -28,6 +28,7 @@ export interface Config extends BaseConfig {
   providerType?: 'stalker' | 'xtream';
   username?: string;
   password?: string;
+  prehash?: string;
 }
 
 export type VodOrdering = "none" | "rating" | "alphabetic";
